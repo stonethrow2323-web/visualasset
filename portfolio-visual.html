@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visual Asset Studio — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inconsolata:wght@300;400;600&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2eb;
+    --surface: #ede9df;
+    --card: #ffffff;
+    --border: #d8d2c4;
+    --ink: #1a1714;
+    --ink-muted: #7a7468;
+    --ink-faint: #bdb8af;
+
+    --gimp: #e8531c;
+    --inkscape: #0d6efd;
+    --krita: #2cb67d;
+    --libresprite: #d946ef;
+    --blender: #e88c14;
+    --godot: #478cbf;
+
+    --display: 'Syne', sans-serif;
+    --mono: 'Inconsolata', monospace;
+    --serif: 'Fraunces', serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Subtle grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(26,23,20,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26,23,20,0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── PIXEL CURSOR ── */
+  * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Crect x='0' y='0' width='4' height='4' fill='%231a1714'/%3E%3Crect x='4' y='4' width='4' height='4' fill='%231a1714'/%3E%3Crect x='8' y='8' width='4' height='4' fill='%231a1714'/%3E%3C/svg%3E") 0 0, crosshair; }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--ink);
+    color: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    height: 44px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .topbar-logo {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+  .topbar-links {
+    display: flex;
+    gap: 20px;
+    opacity: 0.5;
+  }
+  .topbar-links a {
+    color: inherit;
+    text-decoration: none;
+    transition: opacity 0.15s;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+  .topbar-links a:hover { opacity: 1; }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    opacity: 0.7;
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #4ade80;
+    animation: blink 2s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 48px 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: end;
+    border-bottom: 2px solid var(--ink);
+    position: relative;
+  }
+
+  .hero-number {
+    position: absolute;
+    top: 32px; right: 48px;
+    font-family: var(--display);
+    font-size: 120px;
+    font-weight: 800;
+    color: var(--ink);
+    opacity: 0.04;
+    line-height: 1;
+    user-select: none;
+  }
+
+  .hero-label {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-label::before {
+    content: '';
+    display: inline-block;
+    width: 20px; height: 1px;
+    background: var(--ink-muted);
+  }
+
+  .hero h1 {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(48px, 6vw, 88px);
+    line-height: 0.92;
+    letter-spacing: -1px;
+    color: var(--ink);
+  }
+  .hero h1 em {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    color: var(--ink-muted);
+  }
+
+  .hero-right {
+    padding-bottom: 8px;
+  }
+
+  .hero-desc {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--ink-muted);
+    max-width: 380px;
+    margin-bottom: 32px;
+    font-family: var(--mono);
+  }
+
+  .hero-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 28px;
+  }
+  .chip {
+    padding: 5px 12px;
+    border: 1.5px solid var(--ink);
+    border-radius: 0;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--ink);
+    background: transparent;
+    transition: all 0.15s;
+  }
+  .chip:hover {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .chip.filled {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .hstat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .hstat-n {
+    font-family: var(--display);
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .hstat-l {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  /* ── TOOL LEGEND ── */
+  .tool-legend {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--ink);
+    overflow-x: auto;
+    background: var(--surface);
+  }
+  .tool-legend::-webkit-scrollbar { height: 0; }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-right: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .legend-item:hover { background: var(--border); }
+  .legend-swatch {
+    width: 10px; height: 10px;
+    border-radius: 0;
+  }
+
+  /* ── MAIN ── */
+  main {
+    padding: 48px;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  /* ── BENTO GRID ── */
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: auto;
+    gap: 2px;
+    background: var(--ink);
+    border: 2px solid var(--ink);
+    margin-bottom: 2px;
+  }
+
+  /* ── PROJECT CARD ── */
+  .pcard {
+    background: var(--card);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s;
+    animation: slideIn 0.4s ease both;
+    display: flex;
+    flex-direction: column;
+  }
+  .pcard:hover { background: var(--surface); }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .pcard:nth-child(1) { animation-delay: 0.05s; }
+  .pcard:nth-child(2) { animation-delay: 0.10s; }
+  .pcard:nth-child(3) { animation-delay: 0.15s; }
+  .pcard:nth-child(4) { animation-delay: 0.20s; }
+  .pcard:nth-child(5) { animation-delay: 0.25s; }
+  .pcard:nth-child(6) { animation-delay: 0.30s; }
+
+  /* Grid spans */
+  .span-5 { grid-column: span 5; }
+  .span-4 { grid-column: span 4; }
+  .span-7 { grid-column: span 7; }
+  .span-6 { grid-column: span 6; }
+  .span-3 { grid-column: span 3; }
+
+  /* Accent left border */
+  .pcard::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent, #ccc);
+  }
+
+  .pcard-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .tool-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px 3px 7px;
+    border: 1.5px solid var(--accent, #ccc);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--accent, #ccc);
+    background: transparent;
+  }
+  .tool-pill-dot {
+    width: 6px; height: 6px;
+    background: var(--accent, #ccc);
+    flex-shrink: 0;
+  }
+
+  .pcard-links {
+    display: flex;
+    gap: 6px;
+  }
+  .pcard-link {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid var(--border);
+    color: var(--ink-muted);
+    text-decoration: none;
+    font-size: 11px;
+    transition: all 0.15s;
+  }
+  .pcard-link:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  .pcard-title {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 22px;
+    line-height: 1.0;
+    letter-spacing: -0.3px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .pcard-subtitle {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 14px;
+  }
+
+  /* Visual preview area */
+  .pcard-preview {
+    flex: 1;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    position: relative;
+  }
+
+  .pcard-desc {
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--ink-muted);
+    margin-bottom: 16px;
+  }
+
+  .pcard-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 16px;
+  }
+  .ptag {
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border: 1px solid var(--border);
+    color: var(--ink-muted);
+  }
+
+  .pcard-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+  }
+  .pcard-meta {
+    display: flex;
+    gap: 12px;
+  }
+  .pmeta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: var(--ink-muted);
+  }
+  .pcard-lang {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--ink-muted);
+    letter-spacing: 1px;
+  }
+  .plang-dot {
+    width: 8px; height: 8px;
+    background: var(--accent, #ccc);
+  }
+
+  /* ── SVG PREVIEW ILLUSTRATIONS ── */
+
+  /* GIMP — raster layers stack */
+  .preview-gimp {
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  /* Krita — brush stroke */
+  .preview-krita {
+    width: 100%; height: 100%;
+    padding: 12px;
+  }
+
+  /* Inkscape — vector nodes */
+  .preview-inkscape {
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Libresprite — pixel grid */
+  .preview-libresprite {
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    image-rendering: pixelated;
+  }
+
+  /* Blender — wireframe */
+  .preview-blender {
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Godot — node tree */
+  .preview-godot {
+    width: 100%; height: 100%;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── FEATURED WIDE CARD ── */
+  .featured-wide {
+    background: var(--ink);
+    color: var(--bg);
+    grid-column: span 12;
+    padding: 36px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+    animation: slideIn 0.4s ease both;
+  }
+  .featured-wide::after {
+    content: 'FEATURED';
+    position: absolute;
+    top: 20px; right: 24px;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--blender);
+    border: 1px solid var(--blender);
+    padding: 2px 7px;
+    opacity: 0.8;
+  }
+  .fw-left h2 {
+    font-family: var(--display);
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+  .fw-left p {
+    font-size: 13px;
+    opacity: 0.6;
+    max-width: 480px;
+    line-height: 1.65;
+  }
+  .fw-right {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .fw-btn {
+    padding: 11px 22px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+  }
+  .fw-btn.primary {
+    background: var(--blender);
+    color: var(--ink);
+    border: none;
+  }
+  .fw-btn.secondary {
+    background: transparent;
+    color: var(--bg);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .fw-btn:hover { opacity: 0.8; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 2px solid var(--ink);
+    padding: 28px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    background: var(--surface);
+  }
+  .footer-sig {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-muted);
+  }
+  .footer-sig strong {
+    font-style: normal;
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: 0.5px;
+  }
+  .footer-pills {
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .fpill {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    color: var(--ink-muted);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; padding: 40px 24px; }
+    main { padding: 24px; }
+    .bento { grid-template-columns: 1fr; }
+    .span-5, .span-4, .span-7, .span-6, .span-3, .featured-wide { grid-column: span 1; }
+    footer, .topbar { padding: 20px 24px; }
+    .hero-number { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">Visual Asset Studio</div>
+    <div class="topbar-links">
+      <a href="#">Repos</a>
+      <a href="#">Stars</a>
+      <a href="#">Followers</a>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="status-dot"></div>
+    Available for AI Research Projects
+  </div>
+</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-number">06</div>
+  <div class="hero-left">
+    <div class="hero-label">Open Source Visual Portfolio</div>
+    <h1>PIXEL<br><em>to</em><br>POLYGON</h1>
+  </div>
+  <div class="hero-right">
+    <p class="hero-desc">
+      A collection of digital asset projects built entirely with open-source tools — from hand-painted textures and vector icon sets to 3D scenes and interactive game prototypes. Crafted for AI research pipelines.
+    </p>
+    <div class="hero-chips">
+      <span class="chip filled">2D Art</span>
+      <span class="chip">3D Assets</span>
+      <span class="chip">Pixel Art</span>
+      <span class="chip">Vector</span>
+      <span class="chip">Game Engine</span>
+      <span class="chip">AI Training Data</span>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-n">6</div><div class="hstat-l">Projects</div></div>
+      <div class="hstat"><div class="hstat-n">312</div><div class="hstat-l">Stars</div></div>
+      <div class="hstat"><div class="hstat-n">44</div><div class="hstat-l">Forks</div></div>
+      <div class="hstat"><div class="hstat-n">1.2k</div><div class="hstat-l">Assets</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- TOOL LEGEND -->
+<div class="tool-legend">
+  <div class="legend-item"><div class="legend-swatch" style="background:var(--gimp)"></div>GIMP</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:var(--inkscape)"></div>Inkscape</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:var(--krita)"></div>Krita</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:var(--libresprite)"></div>LibreSprite</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:var(--blender)"></div>Blender</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:var(--godot)"></div>Godot</div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main>
+  <div class="bento">
+
+    <!-- FEATURED: Blender -->
+    <div class="featured-wide" style="--accent: var(--blender);">
+      <div class="fw-left">
+        <h2>SYNTHETIC SCENE GENERATOR</h2>
+        <p>A Blender Python add-on that procedurally generates labeled 3D scenes — randomized lighting, materials, camera angles, and object placements — then batch-exports annotated renders for computer vision training datasets.</p>
+      </div>
+      <div class="fw-right">
+        <a href="https://github.com" class="fw-btn primary">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.57v-2c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 013.01-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.69.82.57C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          View Repo
+        </a>
+        <a href="https://github.com" class="fw-btn secondary">Docs ↗</a>
+      </div>
+    </div>
+
+    <!-- GIMP -->
+    <div class="pcard span-5" style="--accent: var(--gimp);">
+      <div class="pcard-header">
+        <div class="tool-pill" style="--accent: var(--gimp);">
+          <div class="tool-pill-dot" style="background:var(--gimp)"></div>GIMP
+        </div>
+        <div class="pcard-links">
+          <a href="https://github.com" class="pcard-link">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.57v-2c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 013.01-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.69.82.57C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          </a>
+          <a href="https://github.com" class="pcard-link">↗</a>
+        </div>
+      </div>
+      <div class="pcard-title">TEXTURE AUGMENT SCRIPTS</div>
+      <div class="pcard-subtitle">GIMP · Script-Fu · Raster</div>
+
+      <div class="pcard-preview" style="min-height: 100px;">
+        <!-- Layered raster texture preview -->
+        <svg width="140" height="80" viewBox="0 0 140 80" xmlns="http://www.w3.org/2000/svg">
+          <!-- Layer stack -->
+          <rect x="10" y="50" width="100" height="22" fill="#f5f2eb" stroke="#d8d2c4" stroke-width="1"/>
+          <text x="16" y="65" font-family="monospace" font-size="8" fill="#7a7468">Background</text>
+          <rect x="10" y="35" width="100" height="22" fill="#fde8d8" stroke="#e8531c" stroke-width="1" opacity="0.85"/>
+          <text x="16" y="50" font-family="monospace" font-size="8" fill="#e8531c">Diffuse Map</text>
+          <rect x="10" y="20" width="100" height="22" fill="#fff3e8" stroke="#e8531c" stroke-width="1" opacity="0.7"/>
+          <text x="16" y="35" font-family="monospace" font-size="8" fill="#e8531c">Normal Map</text>
+          <rect x="10" y="5" width="100" height="22" fill="#fee8d0" stroke="#e8531c" stroke-width="1" opacity="0.55"/>
+          <text x="16" y="20" font-family="monospace" font-size="8" fill="#e8531c">Roughness</text>
+          <!-- Stack arrows -->
+          <line x1="118" y1="16" x2="118" y2="64" stroke="#e8531c" stroke-width="1" stroke-dasharray="2,2"/>
+          <polygon points="118,10 115,16 121,16" fill="#e8531c"/>
+        </svg>
+      </div>
+
+      <p class="pcard-desc">GIMP Script-Fu batch scripts for generating PBR texture variations — hue shifts, roughness maps, and damage overlays — to augment training datasets for material recognition models.</p>
+
+      <div class="pcard-tags">
+        <span class="ptag">Script-Fu</span>
+        <span class="ptag">PBR</span>
+        <span class="ptag">augmentation</span>
+        <span class="ptag">batch</span>
+      </div>
+
+      <div class="pcard-footer">
+        <div class="pcard-meta">
+          <div class="pmeta-item">★ 38</div>
+          <div class="pmeta-item">⑂ 7</div>
+        </div>
+        <div class="pcard-lang"><div class="plang-dot" style="background:var(--gimp)"></div>Script-Fu</div>
+      </div>
+    </div>
+
+    <!-- Inkscape -->
+    <div class="pcard span-4" style="--accent: var(--inkscape);">
+      <div class="pcard-header">
+        <div class="tool-pill" style="--accent: var(--inkscape);">
+          <div class="tool-pill-dot" style="background:var(--inkscape)"></div>Inkscape
+        </div>
+        <div class="pcard-links">
+          <a href="https://github.com" class="pcard-link">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.57v-2c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 013.01-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.69.82.57C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          </a>
+          <a href="https://github.com" class="pcard-link">↗</a>
+        </div>
+      </div>
+      <div class="pcard-title">SVG ICON DATASET</div>
+      <div class="pcard-subtitle">Inkscape · SVG · Vector</div>
+
+      <div class="pcard-preview" style="min-height: 100px;">
+        <svg width="160" height="80" viewBox="0 0 160 80" xmlns="http://www.w3.org/2000/svg">
+          <!-- Vector shapes with nodes -->
+          <circle cx="30" cy="40" r="18" fill="none" stroke="#0d6efd" stroke-width="1.5"/>
+          <circle cx="30" cy="22" r="3" fill="#0d6efd"/>
+          <circle cx="48" cy="40" r="3" fill="#0d6efd"/>
+          <circle cx="30" cy="58" r="3" fill="#0d6efd"/>
+          <circle cx="12" cy="40" r="3" fill="#0d6efd"/>
+          <!-- Path with bezier handles -->
+          <path d="M70 60 C80 20, 100 20, 110 60" fill="none" stroke="#0d6efd" stroke-width="1.5"/>
+          <circle cx="70" cy="60" r="3" fill="#0d6efd"/>
+          <circle cx="110" cy="60" r="3" fill="#0d6efd"/>
+          <line x1="70" y1="60" x2="80" y2="20" stroke="#0d6efd" stroke-width="0.5" stroke-dasharray="2,2" opacity="0.5"/>
+          <line x1="110" y1="60" x2="100" y2="20" stroke="#0d6efd" stroke-width="0.5" stroke-dasharray="2,2" opacity="0.5"/>
+          <circle cx="80" cy="20" r="2.5" fill="none" stroke="#0d6efd" stroke-width="1"/>
+          <circle cx="100" cy="20" r="2.5" fill="none" stroke="#0d6efd" stroke-width="1"/>
+          <!-- Small rect -->
+          <rect x="128" y="26" width="22" height="28" fill="none" stroke="#0d6efd" stroke-width="1.5" rx="1"/>
+          <circle cx="128" cy="26" r="3" fill="#0d6efd"/>
+          <circle cx="150" cy="26" r="3" fill="#0d6efd"/>
+          <circle cx="128" cy="54" r="3" fill="#0d6efd"/>
+          <circle cx="150" cy="54" r="3" fill="#0d6efd"/>
+        </svg>
+      </div>
+
+      <p class="pcard-desc">600+ clean SVG icons in a consistent grid, built with Inkscape's node editor. Designed as labeled vector training data for icon classification and symbol recognition models.</p>
+
+      <div class="pcard-tags">
+        <span class="ptag">SVG</span>
+        <span class="ptag">icon-set</span>
+        <span class="ptag">classification</span>
+        <span class="ptag">labeled</span>
+      </div>
+
+      <div class="pcard-footer">
+        <div class="pcard-meta">
+          <div class="pmeta-item">★ 74</div>
+          <div class="pmeta-item">⑂ 12</div>
+        </div>
+        <div class="pcard-lang"><div class="plang-dot" style="background:var(--inkscape)"></div>SVG / Python</div>
+      </div>
+    </div>
+
+    <!-- Krita -->
+    <div class="pcard span-3" style="--accent: var(--krita);">
+      <div class="pcard-header">
+        <div class="tool-pill" style="--accent: var(--krita);">
+          <div class="tool-pill-dot" style="background:var(--krita)"></div>Krita
+        </div>
+        <div class="pcard-links">
+          <a href="https://github.com" class="pcard-link">↗</a>
+        </div>
+      </div>
+      <div class="pcard-title">CONCEPT ART DATASET</div>
+      <div class="pcard-subtitle">Krita · Digital Painting</div>
+
+      <div class="pcard-preview" style="min-height: 90px;">
+        <svg width="100" height="70" viewBox="0 0 100 70" xmlns="http://www.w3.org/2000/svg">
+          <!-- Abstract brushstroke shapes -->
+          <ellipse cx="30" cy="50" rx="28" ry="12" fill="#2cb67d" opacity="0.15" transform="rotate(-15,30,50)"/>
+          <ellipse cx="55" cy="35" rx="32" ry="10" fill="#2cb67d" opacity="0.25" transform="rotate(5,55,35)"/>
+          <ellipse cx="70" cy="52" rx="22" ry="9" fill="#2cb67d" opacity="0.35" transform="rotate(-8,70,52)"/>
+          <path d="M10 30 Q30 10 60 20 Q80 28 90 18" fill="none" stroke="#2cb67d" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+          <path d="M5 45 Q25 38 50 42 Q70 46 95 38" fill="none" stroke="#2cb67d" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+          <circle cx="60" cy="20" r="4" fill="#2cb67d" opacity="0.8"/>
+          <circle cx="30" cy="38" r="3" fill="#2cb67d" opacity="0.5"/>
+        </svg>
+      </div>
+
+      <p class="pcard-desc">200 Krita concept art studies across lighting conditions and styles — metadata-tagged for use in diffusion model fine-tuning pipelines.</p>
+
+      <div class="pcard-tags">
+        <span class="ptag">painting</span>
+        <span class="ptag">fine-tuning</span>
+        <span class="ptag">KRA</span>
+      </div>
+
+      <div class="pcard-footer">
+        <div class="pcard-meta">
+          <div class="pmeta-item">★ 51</div>
+          <div class="pmeta-item">⑂ 6</div>
+        </div>
+        <div class="pcard-lang"><div class="plang-dot" style="background:var(--krita)"></div>KRA / JSON</div>
+      </div>
+    </div>
+
+    <!-- LibreSprite -->
+    <div class="pcard span-4" style="--accent: var(--libresprite);">
+      <div class="pcard-header">
+        <div class="tool-pill" style="--accent: var(--libresprite);">
+          <div class="tool-pill-dot" style="background:var(--libresprite)"></div>LibreSprite
+        </div>
+        <div class="pcard-links">
+          <a href="https://github.com" class="pcard-link">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.57v-2c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 013.01-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.69.82.57C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          </a>
+          <a href="https://github.com" class="pcard-link">↗</a>
+        </div>
+      </div>
+      <div class="pcard-title">SPRITE ATLAS FACTORY</div>
+      <div class="pcard-subtitle">LibreSprite · Pixel Art · Animation</div>
+
+      <div class="pcard-preview" style="min-height: 100px; image-rendering: pixelated;">
+        <!-- Pixel art character sprite sheet visualization -->
+        <svg width="160" height="90" viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
+          <!-- Grid lines -->
+          <line x1="40" y1="0" x2="40" y2="90" stroke="#d8d2c4" stroke-width="0.5"/>
+          <line x1="80" y1="0" x2="80" y2="90" stroke="#d8d2c4" stroke-width="0.5"/>
+          <line x1="120" y1="0" x2="120" y2="90" stroke="#d8d2c4" stroke-width="0.5"/>
+          <line x1="0" y1="45" x2="160" y2="45" stroke="#d8d2c4" stroke-width="0.5"/>
+          <!-- Pixel figures (4 frames, 2 rows) -->
+          <!-- Frame 1 -->
+          <rect x="14" y="8" width="12" height="12" fill="#d946ef"/>
+          <rect x="10" y="20" width="20" height="14" fill="#d946ef" opacity="0.8"/>
+          <rect x="8" y="34" width="8" height="8" fill="#d946ef" opacity="0.6"/>
+          <rect x="24" y="34" width="8" height="8" fill="#d946ef" opacity="0.6"/>
+          <!-- Frame 2 -->
+          <rect x="54" y="8" width="12" height="12" fill="#d946ef"/>
+          <rect x="50" y="20" width="20" height="14" fill="#d946ef" opacity="0.8"/>
+          <rect x="46" y="32" width="8" height="10" fill="#d946ef" opacity="0.6"/>
+          <rect x="66" y="30" width="8" height="12" fill="#d946ef" opacity="0.6"/>
+          <!-- Frame 3 -->
+          <rect x="94" y="8" width="12" height="12" fill="#d946ef"/>
+          <rect x="90" y="20" width="20" height="14" fill="#d946ef" opacity="0.8"/>
+          <rect x="88" y="34" width="8" height="8" fill="#d946ef" opacity="0.6"/>
+          <rect x="104" y="34" width="8" height="8" fill="#d946ef" opacity="0.6"/>
+          <!-- Frame 4 -->
+          <rect x="134" y="8" width="12" height="12" fill="#d946ef"/>
+          <rect x="130" y="20" width="20" height="14" fill="#d946ef" opacity="0.8"/>
+          <rect x="126" y="30" width="8" height="12" fill="#d946ef" opacity="0.6"/>
+          <rect x="146" y="32" width="8" height="10" fill="#d946ef" opacity="0.6"/>
+          <!-- Row 2: death animation frames -->
+          <rect x="14" y="52" width="12" height="12" fill="#d946ef" opacity="0.7"/>
+          <rect x="10" y="64" width="20" height="10" fill="#d946ef" opacity="0.5"/>
+          <rect x="54" y="58" width="12" height="8" fill="#d946ef" opacity="0.5"/>
+          <rect x="48" y="66" width="24" height="8" fill="#d946ef" opacity="0.35"/>
+          <rect x="90" y="68" width="20" height="6" fill="#d946ef" opacity="0.25"/>
+          <rect x="128" y="70" width="24" height="4" fill="#d946ef" opacity="0.15"/>
+        </svg>
+      </div>
+
+      <p class="pcard-desc">A pipeline for generating labeled sprite sheet atlases with LibreSprite — 32×32 and 64×64 characters in 8 animation states, exported as PNG + JSON metadata for pose estimation models.</p>
+
+      <div class="pcard-tags">
+        <span class="ptag">sprite-sheet</span>
+        <span class="ptag">pose-estimation</span>
+        <span class="ptag">pixel-art</span>
+        <span class="ptag">animation</span>
+      </div>
+
+      <div class="pcard-footer">
+        <div class="pcard-meta">
+          <div class="pmeta-item">★ 63</div>
+          <div class="pmeta-item">⑂ 11</div>
+        </div>
+        <div class="pcard-lang"><div class="plang-dot" style="background:var(--libresprite)"></div>Python / JSON</div>
+      </div>
+    </div>
+
+    <!-- Godot -->
+    <div class="pcard span-8" style="--accent: var(--godot);">
+      <div class="pcard-header">
+        <div class="tool-pill" style="--accent: var(--godot);">
+          <div class="tool-pill-dot" style="background:var(--godot)"></div>Godot
+        </div>
+        <div class="pcard-links">
+          <a href="https://github.com" class="pcard-link">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.57v-2c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 013.01-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.65.25 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.69.82.57C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          </a>
+          <a href="https://github.com" class="pcard-link">↗</a>
+        </div>
+      </div>
+      <div class="pcard-title">RL ENVIRONMENT TOOLKIT</div>
+      <div class="pcard-subtitle">Godot 4 · GDScript · Reinforcement Learning</div>
+
+      <div class="pcard-preview" style="min-height: 110px;">
+        <svg width="320" height="100" viewBox="0 0 320 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- Scene node tree -->
+          <!-- Root -->
+          <rect x="10" y="38" width="72" height="22" rx="1" fill="#478cbf" opacity="0.15" stroke="#478cbf" stroke-width="1"/>
+          <text x="18" y="53" font-family="monospace" font-size="8" fill="#478cbf">Node2D (root)</text>
+          <!-- Level 1 nodes -->
+          <line x1="82" y1="49" x2="100" y2="30" stroke="#478cbf" stroke-width="1" opacity="0.4"/>
+          <line x1="82" y1="49" x2="100" y2="49" stroke="#478cbf" stroke-width="1" opacity="0.4"/>
+          <line x1="82" y1="49" x2="100" y2="68" stroke="#478cbf" stroke-width="1" opacity="0.4"/>
+          <rect x="100" y="20" width="68" height="20" rx="1" fill="#478cbf" opacity="0.12" stroke="#478cbf" stroke-width="1"/>
+          <text x="107" y="33" font-family="monospace" font-size="7.5" fill="#478cbf">AgentBody</text>
+          <rect x="100" y="39" width="68" height="20" rx="1" fill="#478cbf" opacity="0.12" stroke="#478cbf" stroke-width="1"/>
+          <text x="107" y="52" font-family="monospace" font-size="7.5" fill="#478cbf">Environment</text>
+          <rect x="100" y="58" width="68" height="20" rx="1" fill="#478cbf" opacity="0.12" stroke="#478cbf" stroke-width="1"/>
+          <text x="107" y="71" font-family="monospace" font-size="7.5" fill="#478cbf">RewardSignal</text>
+          <!-- Level 2 -->
+          <line x1="168" y1="30" x2="186" y2="22" stroke="#478cbf" stroke-width="1" opacity="0.3"/>
+          <line x1="168" y1="30" x2="186" y2="38" stroke="#478cbf" stroke-width="1" opacity="0.3"/>
+          <rect x="186" y="14" width="62" height="16" rx="1" fill="#478cbf" opacity="0.08" stroke="#478cbf" stroke-width="0.8"/>
+          <text x="192" y="25" font-family="monospace" font-size="7" fill="#478cbf" opacity="0.9">CollisionBody</text>
+          <rect x="186" y="32" width="62" height="16" rx="1" fill="#478cbf" opacity="0.08" stroke="#478cbf" stroke-width="0.8"/>
+          <text x="192" y="43" font-family="monospace" font-size="7" fill="#478cbf" opacity="0.9">AnimSprite2D</text>
+          <!-- GDScript icon area -->
+          <rect x="260" y="10" width="50" height="78" rx="2" fill="#478cbf" opacity="0.06" stroke="#478cbf" stroke-width="1"/>
+          <text x="266" y="26" font-family="monospace" font-size="7" fill="#478cbf">extends</text>
+          <text x="266" y="36" font-family="monospace" font-size="7" fill="#478cbf">Node2D</text>
+          <text x="266" y="52" font-family="monospace" font-size="6.5" fill="#478cbf" opacity="0.7">func _step():</text>
+          <text x="268" y="62" font-family="monospace" font-size="6" fill="#478cbf" opacity="0.5">  observe()</text>
+          <text x="268" y="72" font-family="monospace" font-size="6" fill="#478cbf" opacity="0.5">  act()</text>
+          <text x="268" y="82" font-family="monospace" font-size="6" fill="#478cbf" opacity="0.5">  reward()</text>
+        </svg>
+      </div>
+
+      <p class="pcard-desc">A modular Godot 4 project providing reusable environments for reinforcement learning research — configurable observation spaces, action handlers, and a Python bridge for connecting to training loops via WebSocket. Includes 6 pre-built 2D environments.</p>
+
+      <div class="pcard-tags">
+        <span class="ptag">reinforcement-learning</span>
+        <span class="ptag">GDScript</span>
+        <span class="ptag">Python-bridge</span>
+        <span class="ptag">environments</span>
+        <span class="ptag">WebSocket</span>
+        <span class="ptag">Godot 4</span>
+      </div>
+
+      <div class="pcard-footer">
+        <div class="pcard-meta">
+          <div class="pmeta-item">★ 86</div>
+          <div class="pmeta-item">⑂ 8</div>
+        </div>
+        <div class="pcard-lang"><div class="plang-dot" style="background:var(--godot)"></div>GDScript / Python</div>
+      </div>
+    </div>
+
+  </div><!-- /bento -->
+</main>
+
+<footer>
+  <div class="footer-sig">
+    built with <strong>OPEN SOURCE</strong> — pixel to polygon, vector to voxel
+  </div>
+  <div class="footer-pills">
+    <div class="fpill">GNU GPL</div>
+    <div class="fpill">MIT</div>
+    <div class="fpill">CC BY 4.0</div>
+    <div class="fpill">AI-RESEARCH</div>
+    <div class="fpill">FOSS VISUAL</div>
+  </div>
+</footer>
+
+<script>
+  // Legend items highlight matching cards on click
+  const legendItems = document.querySelectorAll('.legend-item');
+  legendItems.forEach(item => {
+    item.addEventListener('click', () => {
+      legendItems.forEach(l => l.style.background = '');
+      item.style.background = 'var(--border)';
+    });
+  });
+</script>
+</body>
+</html>
